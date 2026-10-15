@@ -1,0 +1,7 @@
+[
+	{"bucket":"1","n_species":11067},
+	{"bucket":">1000","n_species":482},
+	{"bucket":"2-10","n_species":16163},
+	{"bucket":"101-1000","n_species":2473},
+	{"bucket":"11-100","n_species":7342}
+]

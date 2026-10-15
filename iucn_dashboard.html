@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IUCN Red List x GBIF: Occurrence Spesies Indonesia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+:root{--bg:#f4f8ff;--ink:#1e293b;--mute:#64748b;--line:#e5ecf6;--track:#eaf0f9;--bar:#eaf0f9;--acc:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+header{background:linear-gradient(120deg,#dbeafe 0%,#d9f5ef 55%,#fff1cf 100%);border-bottom:1px solid var(--line)}
+.hero{max-width:1200px;margin:0 auto;padding:34px 24px 56px}
+.eyebrow{display:inline-block;background:#fff;color:var(--acc);font-size:12px;font-weight:700;letter-spacing:.04em;padding:4px 12px;border-radius:99px;box-shadow:0 1px 3px rgba(30,64,120,.12)}
+h1{margin:12px 0 6px;font-size:clamp(26px,4vw,36px);line-height:1.15;font-weight:800;letter-spacing:-.02em}
+header p{margin:0;color:#475569;max-width:640px}
+main,footer{max-width:1200px;margin:0 auto;padding:0 24px}
+main{position:relative}
+h2{margin:0 0 4px;font-size:17px;font-weight:700}
+.sub{margin:0 0 14px;color:var(--mute);font-size:13px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 1px 2px rgba(30,64,120,.04),0 10px 28px rgba(30,64,120,.07)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:-30px 0 18px}
+.stat{position:relative;padding:18px 18px 18px 84px;min-height:96px;display:flex;flex-direction:column;justify-content:center}
+.stat::before{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:50px;height:50px;border-radius:15px;background:var(--t);display:flex;align-items:center;justify-content:center;font-size:23px}
+.stat:nth-child(1){--c:#2563eb;--t:#dbeafe}.stat:nth-child(1)::before{content:"\1F43E"}
+.stat:nth-child(2){--c:#0d9488;--t:#ccfbf1}.stat:nth-child(2)::before{content:"\1F517"}
+.stat:nth-child(3){--c:#7c3aed;--t:#ede9fe}.stat:nth-child(3)::before{content:"\1F4CD"}
+.stat:nth-child(4){--c:#e11d48;--t:#ffe4e6}.stat:nth-child(4)::before{content:"\26A0\FE0F"}
+.stat b{font-size:28px;line-height:1.1;font-weight:800;color:var(--c)}
+.stat span{color:var(--mute);font-size:13px;margin-top:4px;line-height:1.4}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px;margin-bottom:16px}
+.bar{display:grid;grid-template-columns:200px 1fr 112px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
+.bar i{display:block;height:14px;background:var(--track);border-radius:99px;overflow:hidden}
+.bar u{display:block;height:100%;border-radius:99px;text-decoration:none;transition:width .5s}
+.bar .v{text-align:right;color:var(--mute);font-weight:600;font-variant-numeric:tabular-nums}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+input,select,button{font:inherit;color:var(--ink);background:#fff;border:1px solid #d5e0ef;border-radius:10px;padding:9px 12px;height:40px}
+input[type=search]{flex:1;min-width:220px}
+:focus-visible{outline:3px solid #bfdbfe;outline-offset:0;border-color:var(--acc)}
+#more{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600;cursor:pointer}
+#more:disabled{opacity:.6}
+.cols{display:grid;grid-template-columns:2.4fr 74px 1.1fr 1.3fr 100px 90px 96px;gap:10px;align-items:center;padding:0 14px}
+.th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);background:#f1f6fd;border-radius:10px;padding-top:10px;padding-bottom:10px}
+.th button{all:unset;cursor:pointer;font-weight:700}
+.th button:hover{color:var(--acc)}
+.vs{height:460px;overflow:auto;position:relative;margin-top:4px}
+.rows{position:absolute;left:0;right:0}
+.row{height:34px;border-bottom:1px solid #eef3fa;font-size:14px;cursor:pointer}
+.row:hover{background:#f1f7ff}
+.row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;min-width:36px;text-align:center;border-radius:99px;font-size:11.5px;font-weight:700;padding:2px 10px}
+.meta{color:var(--mute);font-size:13px;margin-top:8px}
+.mh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mh h2{margin:0;font-size:18px}
+#map{height:560px;border-radius:14px;margin-top:12px;border:1px solid var(--line);z-index:0}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;color:var(--mute);font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#94a3b8;border:1px solid rgba(0,0,0,.35)}
+.dot.p{width:16px;height:16px;border:2.5px solid #1e293b}
+.err{background:#fff7e6;border:1px solid #fcd34d;border-radius:14px;padding:16px;margin:18px 0}
+code{background:#eaf0f9;padding:2px 6px;border-radius:6px}
+.leaflet-popup-content{margin:0;color:#1e293b;width:240px!important}
+.leaflet-popup-content-wrapper{padding:0;overflow:hidden;border-radius:14px}
+.pc img{display:block;width:100%;height:170px;object-fit:cover;background:#dbe6f3}
+.nophoto{height:90px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;background:#eef3fa;color:#64748b;font-size:13px}
+.pb{padding:12px 14px 14px;font-size:13px;line-height:1.5}
+.pb b{font-size:15px}.pb .badge{margin-left:6px}.pb .mu,.pb small{color:#64748b;display:block}
+.pb a{color:#2563eb;font-weight:700}
+footer{padding-top:20px;padding-bottom:36px;color:var(--mute);font-size:13px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.bar{grid-template-columns:110px 1fr 84px}.cols{grid-template-columns:2fr 56px 76px 66px}.cols>:nth-child(3),.cols>:nth-child(4),.cols>:nth-child(6){display:none}.card{padding:16px}}
+.btns{display:flex;gap:8px}
+.ramp{display:inline-block;width:90px;height:10px;border-radius:99px;background:linear-gradient(90deg,hsl(55 95% 50%),hsl(28 95% 50%),hsl(0 95% 50%))}
+#yr svg{width:100%;height:auto;display:block}
+#yr g.b:hover rect.bar{fill:#f59e0b}
+.row a{color:#2563eb;font-weight:600;text-decoration:none}.row a:hover{text-decoration:underline}
+.row .z{color:#94a3b8}
+</style>
+</head>
+<body>
+<header><div class="hero"><span class="eyebrow">IUCN RED LIST × GBIF</span><h1>Status konservasi dan sebaran spesies Indonesia</h1><p>Pantau spesies IUCN yang sudah terekam di GBIF, temukan kesenjangan data pada spesies terancam, dan jelajahi titik occurrence di peta.</p></div></header>
+<main id="app"><div class="card" style="margin-top:18px">Memuat data…</div></main>
+<footer>Sumber data: IUCN Red List (iucnredlist.org) dan GBIF.org. Cantumkan versi Red List dan DOI unduhan GBIF di sini.</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => Number(n).toLocaleString('id-ID');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NA = 'Tidak diketahui';
+const gbifLink = d => {
+  const k = d.gbif_speciesKey || d.resolved_key;
+  return k ? `<a href="https://www.gbif.org/taxon/${encodeURIComponent(k)}" target="_blank" rel="noopener" title="Buka halaman spesies di GBIF">GBIF ↗</a>`
+           : `<a href="https://www.gbif.org/species/search?q=${encodeURIComponent(d.iucn_name)}" target="_blank" rel="noopener" title="Tidak ada kunci taksonomi, cari di GBIF">Cari ↗</a>`;
+};
+const CATS = [
+  ['CR','Critically Endangered','#d81e05','#fff'], ['EN','Endangered','#fc7f3f','#000'],
+  ['VU','Vulnerable','#f9e814','#000'], ['NT','Near Threatened','#cce226','#000'],
+  ['LC','Least Concern','#60c659','#000'], ['DD','Data Deficient','#9aa5a0','#000'],
+  ['EW','Extinct in the Wild','#542344','#fff'], ['EX','Extinct','#555','#fff']];
+const CINFO = Object.fromEntries(CATS.map(c => [c[0], c]));
+const THREAT = ['CR','EN','VU'];
+
+const jget = n => fetch('data/' + n + '.json').then(r => { if (!r.ok) throw 0; return r.json(); });
+Promise.all([jget('iucn_matched'), jget('iucn_yearly').catch(() => null), jget('iucn_grid').catch(() => null)])
+  .then(([rows, yearly, grid]) => init(rows, yearly, grid)).catch(() => {
+  $('#app').innerHTML = '<div class="err"><b>Data tidak dapat dimuat.</b><br>Jalankan <code>match_iucn.py</code> sampai selesai agar ' +
+    '<code>data/iucn_matched.json</code> terbentuk, lalu buka halaman ini lewat server lokal: <code>python -m http.server 8000</code> ' +
+    'di folder yang berisi file ini, dan buka <code>http://localhost:8000/dashboard_iucn.html</code>.</div>';
+});
+
+function init(rows, yearly, grid) {
+  rows.forEach(d => { d.kingdom = d.kingdom || NA; d.class = d.class || NA; d.family = d.family || NA; d.category = d.category || 'NE'; d.st = d.match_status || (d.matched ? 'tercocok' : 'tidak ditemukan di GBIF'); });
+  const matched = rows.filter(d => d.matched);
+  const totalOcc = rows.reduce((a, d) => a + d.n_occurrence, 0);
+
+  $('#app').innerHTML = `
+  <section class="stats">
+    <div class="card stat"><b>${fmt(rows.length)}</b><span>spesies di daftar IUCN</span></div>
+    <div class="card stat"><b>${(matched.length / rows.length * 100).toFixed(1)}%</b><span>${fmt(matched.length)} spesies tercocok dengan GBIF</span></div>
+    <div class="card stat"><b>${fmt(totalOcc)}</b><span>total occurrence spesies tercocok</span></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Cakupan GBIF per kategori IUCN</h2><p class="sub">Bar berwarna menunjukkan porsi spesies IUCN yang punya occurrence di GBIF.</p><div id="cov"></div></div>
+    <div class="card"><div class="mh"><div><h2>Occurrence per tahun</h2><p class="sub">Spesies IUCN yang tercocok, menurut tahun pencatatan.</p></div><select id="yrsel" aria-label="Rentang tahun"><option value="0">Semua tahun</option><option value="1900">Sejak 1900</option><option value="1950">Sejak 1950</option><option value="2000">Sejak 2000</option></select></div><div id="yr"></div><div class="meta" id="yrnote"></div></div>
+  </section>
+  <section class="card" id="mapcard" style="margin-bottom:12px">
+    <div class="mh"><h2 id="mtitle">Peta occurrence</h2><span class="btns"><button id="reset" hidden>Kembali ke heatmap</button><button id="more" hidden>Muat 300 titik lagi</button></span></div>
+    <div class="meta" id="mstat">Heatmap menampilkan kepadatan seluruh occurrence spesies IUCN yang tercocok. Klik satu baris spesies di tabel untuk melihat titik occurrence-nya.</div>
+    <div id="map"></div>
+    <div class="legend"><span><i class="dot"></i>Titik occurrence (warna mengikuti kategori IUCN)</span><span><i class="dot p"></i>Bergaris tebal: ada foto</span><span><i class="ramp"></i>Heatmap: sedikit ke banyak (skala log)</span></div>
+  </section>
+  <section class="card"><h2>Daftar spesies</h2>
+    <p class="sub">Seluruh spesies IUCN ditampilkan, termasuk yang belum punya occurrence. Klik satu baris untuk melihat titiknya di peta, atau klik "GBIF" untuk membuka halaman spesiesnya.</p>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Cari nama spesies atau family…" aria-label="Cari">
+      <select id="cat" aria-label="Filter kategori"></select>
+      <select id="st" aria-label="Filter status"><option value="">Semua spesies IUCN</option><option value="m">Punya occurrence</option><option value="u">Tanpa occurrence (semua)</option><option value="k">Tanpa occurrence: dikenali GBIF</option><option value="n">Tidak ditemukan di GBIF</option><option value="s">Dicocokkan lewat sinonim</option><option value="t">Terancam dengan 0–5 occurrence</option></select>
+    </div>
+    <div class="cols th">
+      <button data-k="iucn_name">Spesies</button><button data-k="category">Status</button><button data-k="class">Class</button>
+      <button data-k="family">Family</button><button data-k="n_occurrence" class="num">Occurrence</button><button data-k="last_year" class="num">Terakhir</button><span class="num">Halaman GBIF</span>
+    </div>
+    <div class="vs" id="vs" tabindex="0"><div id="sp"></div><div class="rows" id="rows"></div></div>
+    <div class="meta" id="count"></div>
+  </section>`;
+
+  const present = CATS.filter(c => rows.some(d => d.category === c[0]));
+  const others = rows.filter(d => !CINFO[d.category]);
+  if (others.length) present.push(['NE', 'Lainnya / belum dinilai', '#9aa5a0', '#000']);
+  const inCat = code => rows.filter(d => code === 'NE' ? !CINFO[d.category] : d.category === code);
+
+  $('#cov').innerHTML = present.map(([c, name, col]) => {
+    const all = inCat(c), m = all.filter(d => d.matched).length;
+    return `<div class="bar"><span>${c} ${esc(name)}</span><i><u style="width:${all.length ? m / all.length * 100 : 0}%;background:${col}"></u></i>
+      <span class="v">${fmt(m)} / ${fmt(all.length)}</span></div>`;
+  }).join('');
+
+  const yrs = (yearly || []).filter(d => d.year).sort((a, b) => a.year - b.year);
+  const yrTotal = yrs.reduce((a, d) => a + d.n, 0), gridTotal = grid ? grid.reduce((a, d) => a + d.n, 0) : 0;
+  const compact = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.', ',') + ' jt' : n >= 1e3 ? Math.round(n / 1e3) + ' rb' : String(Math.round(n));
+  const drawYear = () => {
+    if (!yrs.length) { $('#yr').innerHTML = '<div class="err">Data tahunan belum ada. Jalankan ulang <code>match_iucn.py</code> sampai selesai agar <code>data/iucn_yearly.json</code> terbentuk.</div>'; $('#yrnote').textContent = ''; return; }
+    const d = yrs.filter(x => x.year >= +$('#yrsel').value);
+    if (!d.length) { $('#yr').innerHTML = ''; $('#yrnote').textContent = 'Tidak ada data pada rentang ini.'; return; }
+    const y0 = d[0].year, y1 = d[d.length - 1].year, span = y1 - y0 + 1;
+    const W = 640, H = 270, X0 = 48, T = 10, B = 28, pw = W - X0 - 8, ph = H - T - B, bw = pw / span;
+    const mx = Math.max(...d.map(x => x.n)), peak = d.find(x => x.n === mx);
+    const step = [1, 2, 5, 10, 20, 25, 50, 100].find(s => span / s <= 8) || 100;
+    let g = '';
+    for (let i = 0; i <= 4; i++) {
+      const y = T + ph - ph * i / 4;
+      g += `<line x1="${X0}" x2="${W - 8}" y1="${y}" y2="${y}" stroke="#e5ecf6"/><text x="${X0 - 6}" y="${y + 4}" text-anchor="end" font-size="11" fill="#64748b">${compact(mx * i / 4)}</text>`;
+    }
+    d.forEach(x => {
+      const px = X0 + (x.year - y0) * bw, h = x.n / mx * ph;
+      g += `<g class="b"><title>${x.year}: ${fmt(x.n)} occurrence</title><rect x="${px}" y="${T}" width="${bw}" height="${ph}" fill="transparent"/>` +
+        `<rect class="bar" x="${px + bw * 0.08}" y="${T + ph - h}" width="${bw * 0.84}" height="${Math.max(h, 1)}" rx="${bw > 6 ? 2 : 0}" fill="#3b82f6"/></g>`;
+    });
+    for (let y = Math.ceil(y0 / step) * step; y <= y1; y += step)
+      g += `<text x="${X0 + (y - y0) * bw + bw / 2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#64748b">${y}</text>`;
+    $('#yr').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Jumlah occurrence per tahun">${g}</svg>`;
+    const noYear = gridTotal - yrTotal;
+    $('#yrnote').textContent = `Puncak: ${peak.year} dengan ${fmt(peak.n)} occurrence.` + (noYear > 0 ? ` ${fmt(noYear)} occurrence tanpa tahun tidak ditampilkan.` : '');
+  };
+  $('#yrsel').onchange = drawYear; drawYear();
+
+  $('#cat').innerHTML = '<option value="">Semua kategori</option>' + present.map(c => `<option value="${c[0]}">${c[0]} ${esc(c[1])}</option>`).join('');
+
+  const RH = 34, vs = $('#vs'), rowsEl = $('#rows');
+  let view = rows, sortK = 'n_occurrence', dir = -1;
+  const apply = () => {
+    const q = $('#q').value.trim().toLowerCase(), cat = $('#cat').value, st = $('#st').value;
+    view = rows.filter(d => {
+      if (cat && (cat === 'NE' ? CINFO[d.category] : d.category !== cat)) return false;
+      if (st === 'm' && !d.matched) return false;
+      if (st === 'u' && d.matched) return false;
+      if (st === 'k' && !d.st.startsWith('dikenali')) return false;
+      if (st === 'n' && !d.st.startsWith('tidak')) return false;
+      if (st === 's' && !String(d.match_type || '').startsWith('sinonim')) return false;
+      if (st === 't' && !(THREAT.includes(d.category) && d.n_occurrence <= 5)) return false;
+      return !q || (d.iucn_name + ' ' + d.family).toLowerCase().includes(q);
+    });
+    view.sort((a, b) => {
+      const x = a[sortK], y = b[sortK];
+      return (typeof x === 'number' || x == null ? (x ?? -1) - (y ?? -1) : String(x).localeCompare(String(y))) * dir;
+    });
+    $('#sp').style.height = view.length * RH + 'px';
+    $('#count').textContent = fmt(view.length) + ' dari ' + fmt(rows.length) + ' spesies';
+    vs.scrollTop = 0; draw();
+  };
+  const draw = () => {
+    const s = Math.max(0, Math.floor(vs.scrollTop / RH) - 3), e = Math.min(view.length, s + Math.ceil(vs.clientHeight / RH) + 6);
+    rowsEl.style.top = s * RH + 'px';
+    rowsEl.innerHTML = view.slice(s, e).map((d, i) => {
+      const ci = CINFO[d.category] || ['NE', '', '#9aa5a0', '#000'];
+      return `<div class="cols row" data-i="${s + i}" tabindex="0" role="button" title="Tampilkan di peta"><span><em>${esc(d.iucn_name)}</em></span>
+        <span><b class="badge" style="background:${ci[2]};color:${ci[3]}">${esc(d.category)}</b></span>
+        <span>${esc(d.class)}</span><span>${esc(d.family)}</span>
+        <span class="num${d.n_occurrence ? '' : ' z'}">${fmt(d.n_occurrence)}</span><span class="num">${d.last_year ?? '–'}</span><span class="num">${gbifLink(d)}</span></div>`;
+    }).join('');
+  };
+  let t; $('#q').oninput = () => { clearTimeout(t); t = setTimeout(apply, 200); };
+  $('#cat').onchange = $('#st').onchange = apply;
+  vs.onscroll = draw;
+  document.querySelectorAll('.th button').forEach(b => b.onclick = () => {
+    const k = b.dataset.k; dir = sortK === k ? -dir : (k === 'n_occurrence' || k === 'last_year' ? -1 : 1); sortK = k; apply();
+  });
+  const pick = el => { if (el.target.closest('a')) return; const r = el.target.closest('.row'); if (r) selectSpecies(view[+r.dataset.i]); };
+  rowsEl.onclick = pick;
+  rowsEl.onkeydown = e => { if (e.target.closest('a')) return; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(e); } };
+  initMap(grid);
+  apply();
+}
+
+/* ===== Peta interaktif: titik dan foto dari GBIF API ===== */
+const API = 'https://api.gbif.org/v1/occurrence/search';
+const COL = '7ddf754f-d193-4cc9-b351-99906754a03b';  // taksonomi COL XR (kunci spesies alfanumerik)
+let map, pts, heat, cur, MSTAT0, reqId = 0;
+const mapStatus = t => { $('#mstat').textContent = t; };
+const photoOf = r => (r.media || []).find(m => m.type === 'StillImage' && /^https?:\/\//.test(m.identifier || ''));
+const lic = s => { const x = /creativecommons\.org\/(?:licenses|publicdomain)\/([^/]+)\/?([^/]*)/.exec(s || ''); return x ? ('CC ' + x[1].toUpperCase() + ' ' + x[2]).trim() : (s || ''); };
+
+function initMap(grid) {
+  if (typeof L === 'undefined') { $('#map').innerHTML = '<div class="err">Leaflet gagal dimuat. Periksa koneksi internet Anda.</div>'; return; }
+  map = L.map('map', { preferCanvas: true }).setView([-2.5, 118], 5);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap' }).addTo(map);
+  const dens = L.tileLayer('https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?srs=EPSG:3857&country=ID&style=purpleYellow.point',
+    { opacity: 0.8, attribution: 'Data: GBIF' });
+  MSTAT0 = $('#mstat').textContent;
+  heat = L.featureGroup();
+  if (grid && grid.length) {
+    const gmax = Math.log10(Math.max(...grid.map(g => g.n)) + 1);
+    grid.forEach(g => {
+      const t = Math.log10(g.n + 1) / gmax;
+      L.rectangle([[g.lat - 0.125, g.lon - 0.125], [g.lat + 0.125, g.lon + 0.125]],
+        { stroke: false, fillColor: 'hsl(' + Math.round(55 * (1 - t)) + ',95%,50%)', fillOpacity: 0.3 + 0.55 * t })
+        .bindTooltip(fmt(g.n) + ' occurrence').addTo(heat);
+    });
+    heat.addTo(map);
+  } else mapStatus('Heatmap belum tersedia: jalankan ulang match_iucn.py agar data/iucn_grid.json terbentuk.');
+  L.control.layers(null, { 'Heatmap occurrence spesies IUCN': heat, 'Kepadatan semua occurrence GBIF di Indonesia': dens }, { collapsed: false }).addTo(map);
+  map.on('overlayadd', e => { if (e.layer === heat) heat.bringToBack(); });
+  pts = L.featureGroup().addTo(map);
+  $('#more').onclick = loadMore;
+  $('#reset').onclick = resetMap;
+}
+
+function resetMap() {
+  reqId++; cur = null; pts.clearLayers();
+  $('#mtitle').textContent = 'Peta occurrence';
+  $('#more').hidden = true; $('#reset').hidden = true;
+  mapStatus(MSTAT0);
+  if (!map.hasLayer(heat)) heat.addTo(map);
+  map.setView([-2.5, 118], 5);
+}
+
+async function gq(filter, extra, offset) {
+  const p = new URLSearchParams({ ...filter, country: 'ID', hasCoordinate: 'true', hasGeospatialIssue: 'false',
+    limit: '300', offset: String(offset), ...extra });
+  const r = await fetch(API + '?' + p);
+  if (!r.ok) throw new Error('GBIF ' + r.status);
+  return r.json();
+}
+
+async function selectSpecies(d) {
+  if (!map || !d) return;
+  if (!d.gbif_speciesKey) { mapStatus('Spesies ini tidak punya occurrence di GBIF, jadi tidak ada titik untuk ditampilkan.'); return; }
+  const id = ++reqId;
+  pts.clearLayers();
+  $('#mtitle').innerHTML = '<em>' + esc(d.iucn_name) + '</em>';
+  $('#more').hidden = true; $('#reset').hidden = false;
+  mapStatus('Memuat titik occurrence dari GBIF…');
+  $('#mapcard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try {
+    let filter = { taxonKey: d.gbif_speciesKey, checklistKey: COL };
+    let [a, b] = await Promise.all([gq(filter, {}, 0), gq(filter, { mediaType: 'StillImage' }, 0)]);
+    if (!a.count && d.gbif_species) {   // cadangan: cari lewat nama ilmiah
+      filter = { scientificName: d.gbif_species, checklistKey: COL };
+      [a, b] = await Promise.all([gq(filter, {}, 0), gq(filter, { mediaType: 'StillImage' }, 0)]);
+    }
+    if (id !== reqId) return;
+    const fb = b.results.find(photoOf);
+    cur = { d, filter, offset: 300, total: a.count, photos: b.count, end: a.endOfRecords, seen: new Set(),
+            fallback: fb ? photoOf(fb) : null };
+    addPoints(a.results); addPoints(b.results);
+    if (cur.seen.size) map.fitBounds(pts.getBounds().pad(0.2), { maxZoom: 9 });
+    summary();
+  } catch (e) { if (id === reqId) mapStatus('Gagal memuat dari GBIF: ' + e.message); }
+}
+
+function addPoints(list) {
+  const col = (CINFO[cur.d.category] || [0, 0, '#9aa5a0'])[2];
+  list.forEach(r => {
+    if (cur.seen.has(r.key) || r.decimalLatitude == null || r.decimalLongitude == null) return;
+    cur.seen.add(r.key);
+    const has = !!photoOf(r);
+    L.circleMarker([r.decimalLatitude, r.decimalLongitude], {
+      radius: has ? 8 : 5, color: has ? '#14231f' : 'rgba(0,0,0,.45)', weight: has ? 2.5 : 1, fillColor: col, fillOpacity: 0.85
+    }).bindPopup(() => popup(r), { maxWidth: 260, minWidth: 240 }).addTo(pts);
+  });
+}
+
+function summary() {
+  mapStatus(fmt(cur.seen.size) + ' titik ditampilkan dari ' + fmt(cur.total) + ' occurrence berkoordinat di GBIF; ' +
+    fmt(cur.photos) + ' punya foto (titik bergaris tebal). Klik titik untuk melihat detailnya.');
+  $('#more').hidden = cur.end || cur.offset >= Math.min(cur.total, 100000);
+}
+
+async function loadMore() {
+  const c = cur, btn = $('#more');
+  btn.disabled = true;
+  try {
+    const a = await gq(c.filter, {}, c.offset);
+    if (c !== cur) return;
+    c.offset += 300; c.end = a.endOfRecords;
+    addPoints(a.results); summary();
+  } catch (e) { mapStatus('Gagal memuat dari GBIF: ' + e.message); }
+  finally { btn.disabled = false; }
+}
+
+function popup(r) {
+  const own = photoOf(r), m = own || cur.fallback;
+  const name = esc(r.species || r.scientificName || cur.d.iucn_name);
+  const img = m
+    ? '<img src="' + esc(m.identifier) + '" alt="Foto ' + name + '" loading="lazy" referrerpolicy="no-referrer" ' +
+      'onerror="this.outerHTML=\'<div class=nophoto>Foto tidak dapat dimuat</div>\'">'
+    : '<div class="nophoto">Tidak ada foto untuk spesies ini di GBIF</div>';
+  const cap = m ? '<small>' + (own ? '' : 'Foto dari occurrence lain. ') +
+    esc([m.creator || m.rightsHolder, lic(m.license)].filter(Boolean).join(', ')) + '</small>' : '';
+  const ci = CINFO[cur.d.category];
+  const place = [r.locality, r.stateProvince].filter(Boolean).join(', ');
+  const when = r.eventDate ? String(r.eventDate).slice(0, 10) : (r.year || '');
+  const info = [when, r.recordedBy, (r.basisOfRecord || '').replace(/_/g, ' ').toLowerCase()].filter(Boolean).join(', ');
+  return '<div class="pc">' + img + '<div class="pb"><b><em>' + name + '</em></b>' +
+    (ci ? '<span class="badge" style="background:' + ci[2] + ';color:' + ci[3] + '">' + esc(cur.d.category) + '</span>' : '') +
+    (place ? '<div>' + esc(place) + '</div>' : '') + (info ? '<span class="mu">' + esc(info) + '</span>' : '') + cap +
+    '<div><a href="https://www.gbif.org/occurrence/' + esc(r.key) + '" target="_blank" rel="noopener">Buka di GBIF</a></div></div></div>';
+}
+</script>
+</body>
+</html>
